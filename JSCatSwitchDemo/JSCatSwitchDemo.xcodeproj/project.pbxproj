@@ -13,6 +13,8 @@
 		549161281D814188003A6F0D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 549161261D814188003A6F0D /* Main.storyboard */; };
 		5491612A1D814188003A6F0D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 549161291D814188003A6F0D /* Assets.xcassets */; };
 		5491612D1D814188003A6F0D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5491612B1D814188003A6F0D /* LaunchScreen.storyboard */; };
+		549161371D81465A003A6F0D /* JSCatSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = 549161361D81465A003A6F0D /* JSCatSwitch.m */; };
+		54EAB42A1D82A07400C63B2D /* ViewConst.h in Sources */ = {isa = PBXBuildFile; fileRef = 54EAB4291D82A07400C63B2D /* ViewConst.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +28,9 @@
 		549161291D814188003A6F0D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5491612C1D814188003A6F0D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5491612E1D814188003A6F0D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		549161351D81465A003A6F0D /* JSCatSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCatSwitch.h; sourceTree = "<group>"; };
+		549161361D81465A003A6F0D /* JSCatSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSCatSwitch.m; sourceTree = "<group>"; };
+		54EAB4291D82A07400C63B2D /* ViewConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewConst.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +63,7 @@
 		5491611C1D814188003A6F0D /* JSCatSwitchDemo */ = {
 			isa = PBXGroup;
 			children = (
+				549161341D814620003A6F0D /* JSCatSwitch */,
 				549161201D814188003A6F0D /* AppDelegate.h */,
 				549161211D814188003A6F0D /* AppDelegate.m */,
 				549161231D814188003A6F0D /* ViewController.h */,
@@ -77,6 +83,17 @@
 				5491611E1D814188003A6F0D /* main.m */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		549161341D814620003A6F0D /* JSCatSwitch */ = {
+			isa = PBXGroup;
+			children = (
+				549161351D81465A003A6F0D /* JSCatSwitch.h */,
+				549161361D81465A003A6F0D /* JSCatSwitch.m */,
+				54EAB4291D82A07400C63B2D /* ViewConst.h */,
+			);
+			name = JSCatSwitch;
+			path = ../../JSCatSwitch;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -152,6 +169,8 @@
 				549161251D814188003A6F0D /* ViewController.m in Sources */,
 				549161221D814188003A6F0D /* AppDelegate.m in Sources */,
 				5491611F1D814188003A6F0D /* main.m in Sources */,
+				549161371D81465A003A6F0D /* JSCatSwitch.m in Sources */,
+				54EAB42A1D82A07400C63B2D /* ViewConst.h in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -300,6 +319,7 @@
 				549161331D814188003A6F0D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

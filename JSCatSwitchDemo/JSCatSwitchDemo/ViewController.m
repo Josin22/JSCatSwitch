@@ -7,6 +7,8 @@
 //
 
 #import "ViewController.h"
+#import "JSCatSwitch.h"
+#import "ViewConst.h"
 
 @interface ViewController ()
 
@@ -16,12 +18,22 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+
+    self.view.backgroundColor = [UIColor whiteColor];
+    
+    CGFloat screenWidth = CGRectGetWidth(self.view.frame);
+    CGFloat screenHeight = CGRectGetHeight(self.view.frame);
+    CGFloat catSwitchWidth = screenWidth*3/4;
+    CGFloat catSwitchHeight = catSwitchWidth*scale_swtich_bg_wh;;
+    
+    [self.view addSubview:({
+        
+        JSCatSwitch *catSwitch = [[JSCatSwitch alloc] initWithFrame:CGRectMake(screenWidth/2-catSwitchWidth/2, screenHeight/2-catSwitchHeight/2, catSwitchWidth, catSwitchHeight)];
+        catSwitch;
+        
+    })];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
+
 
 @end
