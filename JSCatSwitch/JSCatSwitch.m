@@ -24,6 +24,12 @@
 @property (strong, nonatomic) NSArray *transitColorArray;
 
 @property (strong, nonatomic) NSArray *offColorArray;
+//左眼
+@property (strong, nonatomic) CAShapeLayer *leftEyeLayer;
+//右眼
+@property (strong, nonatomic) CAShapeLayer *rightEyeLayer;
+//嘴
+@property (strong, nonatomic) CAShapeLayer *mouseLayer;
 
 @end
 
@@ -76,6 +82,44 @@
 }
 
 #pragma mark - lazy load
+
+- (CAShapeLayer *)leftEyeLayer{
+    
+    if (!_leftEyeLayer) {
+        _leftEyeLayer = [CAShapeLayer layer];
+        _leftEyeLayer.frame = self.bounds;
+        _leftEyeLayer.lineCap = kCALineCapRound;
+        _leftEyeLayer.lineJoin = kCALineJoinRound;
+        _leftEyeLayer.fillColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
+    }
+    return _leftEyeLayer;
+}
+
+- (CAShapeLayer *)rightEyeLayer{
+    
+    if (!_rightEyeLayer) {
+        _rightEyeLayer = [CAShapeLayer layer];
+        _rightEyeLayer.frame = self.bounds;
+        _rightEyeLayer.lineCap = kCALineCapRound;
+        _rightEyeLayer.lineJoin = kCALineJoinRound;
+        _rightEyeLayer.fillColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
+    }
+    return _rightEyeLayer;
+}
+
+- (CAShapeLayer *)mouseLayer{
+    
+    if (!_mouseLayer) {
+        _mouseLayer = [CAShapeLayer layer];
+        _mouseLayer.frame = self.bounds;
+        _mouseLayer.fillColor = [UIColor clearColor].CGColor;
+        _mouseLayer.lineWidth = 1.75;
+        _mouseLayer.lineCap = kCALineCapRound;
+        _mouseLayer.lineJoin = kCALineJoinRound;
+        _mouseLayer.strokeColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
+    }
+    return _mouseLayer;
+}
 
 - (CAGradientLayer*)bgGradientLayer{
     
@@ -144,13 +188,13 @@
     
     CAShapeLayer *catLayer = [CAShapeLayer layer];
     catLayer.frame = [self bounds];
+    catLayer.lineJoin = kCALineJoinRound;
+    catLayer.lineCap = kCALineCapRound;
     catLayer.fillColor = [UIColor whiteColor].CGColor;
     
     [self.layer addSublayer:catLayer];
     
     UIBezierPath *catPath = [UIBezierPath bezierPath];
-    catPath.lineCapStyle = kCGLineCapRound; //线条拐角
-    catPath.lineJoinStyle = kCGLineJoinRound; //终点处理
     [catPath fill];
     
     CGFloat selfWidth = CGRectGetWidth(self.frame);
@@ -187,11 +231,53 @@
     //右边半拉头
     [catPath addCurveToPoint:catRightTopPoint controlPoint1:CGPointMake(catHeadHalfPiont.x+14, catHeadHalfPiont.y) controlPoint2:CGPointMake(catRightTopPoint.x-10, catRightTopPoint.y)];
     //
-    //右边线
+    //右边线                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
     [catPath addQuadCurveToPoint:endPoint controlPoint:CGPointMake(catLeftDownPointX+catWidth+kcatSpedc, catControllY)];
     [catPath closePath];
     catLayer.path = catPath.CGPath;
+    
+    CGFloat eyeRadius = 3.5;
+    
+    //左眼
+    [catLayer addSublayer:self.leftEyeLayer];
+    UIBezierPath *leftPath = [UIBezierPath bezierPath];
+    [leftPath fill];
+    
+    CGFloat leftEyeX = catLeftDownPointX+catWidth/4;
+    CGFloat leftEyeY = catLeftTopY+(CGRectGetHeight(self.bounds)-catLeftTopY)/3;
+    [leftPath addArcWithCenter:CGPointMake(leftEyeX, leftEyeY) radius:eyeRadius startAngle:0 endAngle:M_PI*2  clockwise:YES];
+    [leftPath closePath];
+    self.leftEyeLayer.path = leftPath.CGPath;
+    
+    //右眼
+    [catLayer addSublayer:self.rightEyeLayer];
+    UIBezierPath *rightPath = [UIBezierPath bezierPath];
+    [rightPath fill];
+    
+    CGFloat rightEyeX = catLeftDownPointX+catWidth*3/4;
+    CGFloat rightEyeY = catLeftTopY+(CGRectGetHeight(self.bounds)-catLeftTopY)/3;
+    [rightPath addArcWithCenter:CGPointMake(rightEyeX, rightEyeY) radius:eyeRadius startAngle:0 endAngle:M_PI*2  clockwise:YES];
+    [rightPath closePath];
+    self.rightEyeLayer.path = rightPath.CGPath;
 
+    
+    //嘴
+    [catLayer addSublayer:self.mouseLayer];
+    
+    UIBezierPath *mousePath = [UIBezierPath bezierPath];
+    CGFloat mouseStartX = leftEyeX+eyeRadius;
+    CGFloat mouseStartY = leftEyeY+3*eyeRadius;
+    CGFloat mouseW = (rightEyeX-leftEyeX)-2*eyeRadius;
+    
+    [mousePath moveToPoint:CGPointMake(mouseStartX, mouseStartY)];
+    [mousePath addQuadCurveToPoint:CGPointMake(mouseW/2+mouseStartX, mouseStartY) controlPoint:CGPointMake(mouseStartX+mouseW/4, mouseStartY+mouseW/5)];
+    [mousePath addQuadCurveToPoint:CGPointMake(mouseW+mouseStartX, mouseStartY) controlPoint:CGPointMake(mouseStartX+mouseW*3/4, mouseStartY+mouseW/5)];
+
+//    [mousePath addCurveToPoint:CGPointMake(mouseW/2+mouseStartX, mouseStartY) controlPoint1:CGPointMake(mouseStartX+mouseW/4, mouseStartY+mouseW/4) controlPoint2:CGPointMake(mouseStartX+mouseW/4, mouseStartY-mouseW/4)];
+    
+    self.mouseLayer.path = mousePath.CGPath;
+    
+    
 }
 
 
