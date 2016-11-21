@@ -15,6 +15,12 @@
     SEL _action;
     NSTimer *_timer;
     BOOL _switchOnStatue;
+    //
+    UIBezierPath *rightPath;
+    UIBezierPath *leftPath;
+    //
+    UIBezierPath *lineLeftPath;
+    UIBezierPath *lineRightPath;
 }
 
 @property (strong, nonatomic) CAGradientLayer *bgGradientLayer;
@@ -68,7 +74,7 @@
 
 - (void) initialize{
     
-    _switchOnStatue = NO;
+    _switchOnStatue = YES;
 
     self.layer.shadowColor = [UIColor lightGrayColor].CGColor;
     self.layer.shadowOpacity = 1;
@@ -90,6 +96,8 @@
         _leftEyeLayer.frame = self.bounds;
         _leftEyeLayer.lineCap = kCALineCapRound;
         _leftEyeLayer.lineJoin = kCALineJoinRound;
+        _leftEyeLayer.lineWidth = 2;
+        _leftEyeLayer.strokeColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
         _leftEyeLayer.fillColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
     }
     return _leftEyeLayer;
@@ -102,6 +110,8 @@
         _rightEyeLayer.frame = self.bounds;
         _rightEyeLayer.lineCap = kCALineCapRound;
         _rightEyeLayer.lineJoin = kCALineJoinRound;
+        _rightEyeLayer.lineWidth = 2;
+        _rightEyeLayer.strokeColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
         _rightEyeLayer.fillColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
     }
     return _rightEyeLayer;
@@ -113,7 +123,7 @@
         _mouseLayer = [CAShapeLayer layer];
         _mouseLayer.frame = self.bounds;
         _mouseLayer.fillColor = [UIColor clearColor].CGColor;
-        _mouseLayer.lineWidth = 1.75;
+        _mouseLayer.lineWidth = 2;
         _mouseLayer.lineCap = kCALineCapRound;
         _mouseLayer.lineJoin = kCALineJoinRound;
         _mouseLayer.strokeColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
@@ -236,11 +246,11 @@
     [catPath closePath];
     catLayer.path = catPath.CGPath;
     
-    CGFloat eyeRadius = 3.5;
+    CGFloat eyeRadius = 2.0;
     
     //左眼
     [catLayer addSublayer:self.leftEyeLayer];
-    UIBezierPath *leftPath = [UIBezierPath bezierPath];
+    leftPath = [UIBezierPath bezierPath];
     [leftPath fill];
     
     CGFloat leftEyeX = catLeftDownPointX+catWidth/4;
@@ -249,9 +259,15 @@
     [leftPath closePath];
     self.leftEyeLayer.path = leftPath.CGPath;
     
+    lineLeftPath = [UIBezierPath bezierPath];
+    [lineLeftPath fill];
+    [lineLeftPath moveToPoint:CGPointMake(leftEyeX-catWidth/8, leftEyeY)];
+    [lineLeftPath addLineToPoint:CGPointMake(leftEyeX+catWidth/8, leftEyeY)];
+    [lineLeftPath closePath];
+    
     //右眼
     [catLayer addSublayer:self.rightEyeLayer];
-    UIBezierPath *rightPath = [UIBezierPath bezierPath];
+    rightPath = [UIBezierPath bezierPath];
     [rightPath fill];
     
     CGFloat rightEyeX = catLeftDownPointX+catWidth*3/4;
@@ -260,13 +276,18 @@
     [rightPath closePath];
     self.rightEyeLayer.path = rightPath.CGPath;
 
+    lineRightPath = [UIBezierPath bezierPath];
+    [lineRightPath fill];
+    [lineRightPath  moveToPoint:CGPointMake(rightEyeX-catWidth/8, rightEyeY)];
+    [lineRightPath addLineToPoint:CGPointMake(rightEyeX+catWidth/8, rightEyeY)];
+    [lineRightPath closePath];
     
     //嘴
     [catLayer addSublayer:self.mouseLayer];
     
     UIBezierPath *mousePath = [UIBezierPath bezierPath];
     CGFloat mouseStartX = leftEyeX+eyeRadius;
-    CGFloat mouseStartY = leftEyeY+3*eyeRadius;
+    CGFloat mouseStartY = leftEyeY+4*eyeRadius;
     CGFloat mouseW = (rightEyeX-leftEyeX)-2*eyeRadius;
     
     [mousePath moveToPoint:CGPointMake(mouseStartX, mouseStartY)];
@@ -295,12 +316,37 @@
 //        
 //    }
     _switchOnStatue = !_switchOnStatue;
- 
+    NSArray *leftValues = nil;
+    NSArray *rightValues = nil;
+    
     if (_switchOnStatue) {
+        
         self.bgGradientLayer.colors = self.onColorArray;
+        leftValues = @[(__bridge id)lineLeftPath.CGPath,(__bridge id)leftPath.CGPath];
+        rightValues = @[(__bridge id)lineRightPath.CGPath,(__bridge id)rightPath.CGPath];
+        
     } else {
+        
         self.bgGradientLayer.colors = self.offColorArray;
+        leftValues = @[(__bridge id)leftPath.CGPath,(__bridge id)lineLeftPath.CGPath];
+        rightValues = @[(__bridge id)rightPath.CGPath,(__bridge id)lineRightPath.CGPath];
+
     }
+    
+    CAKeyframeAnimation *leftLineAniamtion = [CAKeyframeAnimation animationWithKeyPath:@"path"];
+    leftLineAniamtion.values = leftValues;
+    leftLineAniamtion.duration = .5;
+    leftLineAniamtion.removedOnCompletion = NO;
+    leftLineAniamtion.fillMode = kCAFillModeForwards;
+    [self.leftEyeLayer addAnimation:leftLineAniamtion forKey:@"leftAnimationKey"];
+    
+    CAKeyframeAnimation *rightLineAniamtion = [CAKeyframeAnimation animationWithKeyPath:@"path"];
+    rightLineAniamtion.values = rightValues;
+    rightLineAniamtion.duration = .5;
+    rightLineAniamtion.removedOnCompletion = NO;
+    rightLineAniamtion.fillMode = kCAFillModeForwards;
+    [self.rightEyeLayer addAnimation:rightLineAniamtion forKey:@"rightAnimationKey"];
+
 }
 
 
