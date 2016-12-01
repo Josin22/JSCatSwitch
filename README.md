@@ -1,4 +1,9 @@
-
+[![header](https://raw.githubusercontent.com/Josin22/JSDownloadView/master/JSDownloadViewDemo/Source/download_icon.png)](http://qiaotongxin.cc)
+# JSCatSwitch
+[![GitHub license](https://img.shields.io/badge/platform-ios-green.svg
+)](https://github.com/josin22/JSCatSwitch)
+[![GitHub license](https://img.shields.io/badge/license-MIT-green.svg)](https://raw.githubusercontent.com/josin22/JSDownloadView/master/LICENSE)
+[![CocoaPods Compatible](https://img.shields.io/badge/build-passing-green.svg)](https://github.com/josin22/JSDownloadView)
 
 # 开始之前
 所用到的类:
