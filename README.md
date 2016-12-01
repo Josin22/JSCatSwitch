@@ -1,4 +1,4 @@
-
+![images](https://raw.githubusercontent.com/Josin22/JSCatSwitch/master/Source/catswitch_icon.jpg)
 # JSCatSwitch
 [![GitHub license](https://img.shields.io/badge/platform-ios-green.svg
 )](https://github.com/josin22/JSCatSwitch)
