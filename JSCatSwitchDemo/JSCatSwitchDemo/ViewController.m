@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 #import "JSCatSwitch.h"
-#import "ViewConst.h"
+
 
 @interface ViewController ()
 

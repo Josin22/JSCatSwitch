@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DrawHelper.h"
 
 @interface JSCatSwitch : UIControl
 

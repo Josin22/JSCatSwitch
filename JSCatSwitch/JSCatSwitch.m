@@ -7,22 +7,14 @@
 //
 
 #import "JSCatSwitch.h"
-#import "ViewConst.h"
+#import "DrawHelper.h"
 
 @interface JSCatSwitch (){
 
     id _target;
     SEL _action;
-    NSTimer *_timer;
+    
     BOOL _switchOnStatue;
-    //
-    UIBezierPath *rightPath;
-    UIBezierPath *leftPath;
-    //
-    UIBezierPath *lineLeftPath;
-    UIBezierPath *linePointLeftPath;
-    UIBezierPath *lineRightPath;
-    UIBezierPath *linePointRightPath;
 }
 
 @property (strong, nonatomic) CAGradientLayer *bgGradientLayer;
@@ -32,12 +24,20 @@
 @property (strong, nonatomic) NSArray *transitColorArray;
 
 @property (strong, nonatomic) NSArray *offColorArray;
+
+@property (strong, nonatomic) CAShapeLayer *catLayer;
 //左眼
 @property (strong, nonatomic) CAShapeLayer *leftEyeLayer;
 //右眼
 @property (strong, nonatomic) CAShapeLayer *rightEyeLayer;
 //嘴
 @property (strong, nonatomic) CAShapeLayer *mouseLayer;
+
+@property (strong, nonatomic) CAShapeLayer *switchLineLayer;
+
+@property (strong, nonatomic) CAShapeLayer *switchBallLayer;
+
+@property (strong, nonatomic) DrawHelper *helper;
 
 @end
 
@@ -82,14 +82,67 @@
     self.layer.shadowOpacity = 1;
     self.layer.shadowRadius = 5;
     self.layer.shadowOffset = CGSizeMake(3.0, 3.0);
-    
     [self.layer addSublayer:self.bgGradientLayer];
     
-    [self drawCat];
+    self.helper = [[DrawHelper alloc]init];
+    [self.helper drawCat:self.bounds];
 
+    [self.layer addSublayer:self.catLayer];
+    [self.catLayer addSublayer:self.switchLineLayer];
+    [self.catLayer addSublayer:self.switchBallLayer];
+    [self.catLayer addSublayer:self.leftEyeLayer];
+    [self.catLayer addSublayer:self.rightEyeLayer];
+    [self.catLayer addSublayer:self.mouseLayer];
 }
 
 #pragma mark - lazy load
+
+
+- (CAShapeLayer *)catLayer{
+    
+    if (!_catLayer) {
+        _catLayer = [CAShapeLayer layer];
+        _catLayer.frame = self.bounds;
+        _catLayer.lineJoin = kCALineJoinRound;
+        _catLayer.lineCap = kCALineCapRound;
+        _catLayer.fillColor = [UIColor whiteColor].CGColor;
+        _catLayer.path = self.helper.catPath.CGPath;
+    }
+    return _catLayer;
+}
+
+
+- (CAShapeLayer *)switchLineLayer{
+    
+    if (!_switchLineLayer) {
+        _switchLineLayer = [CAShapeLayer layer];
+        _switchLineLayer.frame = [self bounds];
+        _switchLineLayer.lineJoin = kCALineJoinRound;
+        _switchLineLayer.lineWidth = 4;
+        _switchLineLayer.strokeColor = [UIColor whiteColor].CGColor;
+        _switchLineLayer.fillColor = [UIColor whiteColor].CGColor;
+        //switch line
+        _switchLineLayer.path = self.helper.switchLinePath.CGPath;
+        
+    }
+    return _switchLineLayer;
+}
+
+- (CAShapeLayer *)switchBallLayer{
+    
+    if (!_switchBallLayer) {
+        _switchBallLayer = [CAShapeLayer layer];
+        _switchBallLayer.frame = [self bounds];
+        _switchBallLayer.lineCap = kCALineCapRound;
+        _switchBallLayer.lineJoin = kCALineJoinRound;
+        _switchBallLayer.lineWidth = 4;
+        _switchBallLayer.strokeColor = [UIColor whiteColor].CGColor;
+        _switchBallLayer.fillColor = [UIColor whiteColor].CGColor;
+        //switch ball
+        _switchBallLayer.path = self.helper.switchLeftPath.CGPath;
+    }
+    return _switchBallLayer;
+}
 
 - (CAShapeLayer *)leftEyeLayer{
     
@@ -101,6 +154,8 @@
         _leftEyeLayer.lineWidth = 2;
         _leftEyeLayer.strokeColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
         _leftEyeLayer.fillColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
+        //左眼
+        _leftEyeLayer.path = self.helper.leftPath.CGPath;
     }
     return _leftEyeLayer;
 }
@@ -115,6 +170,8 @@
         _rightEyeLayer.lineWidth = 2;
         _rightEyeLayer.strokeColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
         _rightEyeLayer.fillColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
+        //右眼
+        _rightEyeLayer.path = self.helper.rightPath.CGPath;
     }
     return _rightEyeLayer;
 }
@@ -129,6 +186,8 @@
         _mouseLayer.lineCap = kCALineCapRound;
         _mouseLayer.lineJoin = kCALineJoinRound;
         _mouseLayer.strokeColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
+        //嘴
+        self.mouseLayer.path = self.helper.mousePath.CGPath;
     }
     return _mouseLayer;
 }
@@ -187,133 +246,8 @@
 - (void)setIsOn:(BOOL)isOn{
     
     _switchOnStatue = isOn;
-}
-
-
-#pragma mark -  method
-
-
-
-#pragma mark -  Draw Cat
-
-- (void)drawCat{
     
-    CAShapeLayer *catLayer = [CAShapeLayer layer];
-    catLayer.frame = [self bounds];
-    catLayer.lineJoin = kCALineJoinRound;
-    catLayer.lineCap = kCALineCapRound;
-    catLayer.fillColor = [UIColor whiteColor].CGColor;
-    
-    [self.layer addSublayer:catLayer];
-    
-    UIBezierPath *catPath = [UIBezierPath bezierPath];
-    [catPath fill];
-    
-    CGFloat selfWidth = CGRectGetWidth(self.frame);
-    CGFloat selfHeight = CGRectGetHeight(self.frame);
-    
-    CGFloat catHeadWidth = scale_catHead_width *selfWidth;
-    CGFloat catWidth = scale_cat_width*selfWidth;
-    CGFloat catHeight = scale_cat_height*selfHeight;
-    
-    CGFloat catLeftDownPointX = (selfWidth-catWidth)/2;
-    CGFloat catLeftTopPointX = (selfWidth-catHeadWidth)/2;
-    
-    CGFloat kcatSpedc = 3;
-    
-    CGFloat catLeftTopY = selfHeight-catHeight;
-    CGFloat catControllY = catLeftTopY+catHeight/2;
-    
-    CGPoint catLeftTopPoint = CGPointMake(catLeftTopPointX, catLeftTopY);
-    CGPoint catRightTopPoint = CGPointMake(catLeftTopPointX+catHeadWidth, catLeftTopY);
-    
-    CGPoint startPoint = CGPointMake(catLeftDownPointX, selfHeight);
-    CGPoint endPoint = CGPointMake(catLeftDownPointX+catWidth, selfHeight);
-    //左边线
-    [catPath moveToPoint:startPoint];
-    [catPath addQuadCurveToPoint:catLeftTopPoint controlPoint:CGPointMake(catLeftDownPointX-kcatSpedc,catControllY)];
-    
-    CGFloat catHeadDownHeight = catHeight * scale_cat_head_down;
-    CGFloat catHeadDownPiontX = catLeftDownPointX + catWidth/2;
-    CGFloat catHeadDownPiontY = catLeftTopY + catHeadDownHeight;
-
-    CGPoint catHeadHalfPiont = CGPointMake(catHeadDownPiontX, catHeadDownPiontY);
-    //左边半拉头
-    [catPath addCurveToPoint:catHeadHalfPiont controlPoint1:CGPointMake(catLeftTopPointX+10, catLeftTopY) controlPoint2:CGPointMake(catHeadHalfPiont.x-14, catHeadHalfPiont.y)];
-    //右边半拉头
-    [catPath addCurveToPoint:catRightTopPoint controlPoint1:CGPointMake(catHeadHalfPiont.x+14, catHeadHalfPiont.y) controlPoint2:CGPointMake(catRightTopPoint.x-10, catRightTopPoint.y)];
-    //
-    //右边线                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
-    [catPath addQuadCurveToPoint:endPoint controlPoint:CGPointMake(catLeftDownPointX+catWidth+kcatSpedc, catControllY)];
-    [catPath closePath];
-    catLayer.path = catPath.CGPath;
-    
-    CGFloat eyeRadius = 2.0;
-    
-    //左眼
-    [catLayer addSublayer:self.leftEyeLayer];
-    leftPath = [UIBezierPath bezierPath];
-    [leftPath fill];
-    
-    CGFloat leftEyeX = catLeftDownPointX+catWidth/4;
-    CGFloat leftEyeY = catLeftTopY+(CGRectGetHeight(self.bounds)-catLeftTopY)/3;
-    [leftPath addArcWithCenter:CGPointMake(leftEyeX, leftEyeY) radius:eyeRadius startAngle:0 endAngle:M_PI*2  clockwise:YES];
-    [leftPath closePath];
-    self.leftEyeLayer.path = leftPath.CGPath;
-    
-    linePointLeftPath = [UIBezierPath bezierPath];
-    [linePointLeftPath fill];
-    [linePointLeftPath moveToPoint:CGPointMake(leftEyeX-1, leftEyeY)];
-    [linePointLeftPath addLineToPoint:CGPointMake(leftEyeX+1, leftEyeY)];
-    [linePointLeftPath closePath];
-    
-    lineLeftPath = [UIBezierPath bezierPath];
-    [lineLeftPath fill];
-    [lineLeftPath moveToPoint:CGPointMake(leftEyeX-catWidth/9, leftEyeY)];
-    [lineLeftPath addLineToPoint:CGPointMake(leftEyeX+catWidth/9, leftEyeY)];
-    [lineLeftPath closePath];
-    
-    
-    //右眼
-    [catLayer addSublayer:self.rightEyeLayer];
-    rightPath = [UIBezierPath bezierPath];
-    [rightPath fill];
-    
-    CGFloat rightEyeX = catLeftDownPointX+catWidth*3/4;
-    CGFloat rightEyeY = catLeftTopY+(CGRectGetHeight(self.bounds)-catLeftTopY)/3;
-    [rightPath addArcWithCenter:CGPointMake(rightEyeX, rightEyeY) radius:eyeRadius startAngle:0 endAngle:M_PI*2  clockwise:YES];
-    [rightPath closePath];
-    self.rightEyeLayer.path = rightPath.CGPath;
-
-    linePointRightPath = [UIBezierPath bezierPath];
-    [linePointRightPath fill];
-    [linePointRightPath moveToPoint:CGPointMake(rightEyeX-1, rightEyeY)];
-    [linePointRightPath addLineToPoint:CGPointMake(rightEyeX+1, rightEyeY)];
-    [linePointRightPath closePath];
-    
-    lineRightPath = [UIBezierPath bezierPath];
-    [lineRightPath fill];
-    [lineRightPath  moveToPoint:CGPointMake(rightEyeX-catWidth/9, rightEyeY)];
-    [lineRightPath addLineToPoint:CGPointMake(rightEyeX+catWidth/9, rightEyeY)];
-    [lineRightPath closePath];
-    
-    //嘴
-    [catLayer addSublayer:self.mouseLayer];
-    
-    UIBezierPath *mousePath = [UIBezierPath bezierPath];
-    CGFloat mouseStartX = leftEyeX+eyeRadius;
-    CGFloat mouseStartY = leftEyeY+4*eyeRadius;
-    CGFloat mouseW = (rightEyeX-leftEyeX)-2*eyeRadius;
-    
-    [mousePath moveToPoint:CGPointMake(mouseStartX, mouseStartY)];
-    [mousePath addQuadCurveToPoint:CGPointMake(mouseW/2+mouseStartX, mouseStartY) controlPoint:CGPointMake(mouseStartX+mouseW/4, mouseStartY+mouseW/5)];
-    [mousePath addQuadCurveToPoint:CGPointMake(mouseW+mouseStartX, mouseStartY) controlPoint:CGPointMake(mouseStartX+mouseW*3/4, mouseStartY+mouseW/5)];
-
-//    [mousePath addCurveToPoint:CGPointMake(mouseW/2+m ouseStartX, mouseStartY) controlPoint1:CGPointMake(mouseStartX+mouseW/4, mouseStartY+mouseW/4) controlPoint2:CGPointMake(mouseStartX+mouseW/4, mouseStartY-mouseW/4)];
-    
-    self.mouseLayer.path = mousePath.CGPath;
-    
-    
+    [self switchClick];
 }
 
 
@@ -330,42 +264,45 @@
 //    if ([path containsPoint:point]) {
 //        
 //    }
+    [self switchClick];
+}
+
+- (void)switchClick{
+    
     _switchOnStatue = !_switchOnStatue;
     NSArray *leftValues = nil;
     NSArray *rightValues = nil;
+    NSArray *ballValue = nil;
+    CGColorRef onColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
+    CGColorRef offColor = (__bridge CGColorRef _Nullable)(self.offColorArray[1]);
     
     if (_switchOnStatue) {
         
         self.bgGradientLayer.colors = self.onColorArray;
-        leftValues = @[(__bridge id)lineLeftPath.CGPath,(__bridge id)linePointLeftPath.CGPath,(__bridge id)leftPath.CGPath];
-        rightValues = @[(__bridge id)lineRightPath.CGPath,(__bridge id)linePointRightPath.CGPath,(__bridge id)rightPath.CGPath];
-        self.leftEyeLayer.strokeColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
-        self.rightEyeLayer.strokeColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
-        self.mouseLayer.strokeColor = (__bridge CGColorRef _Nullable)(self.onColorArray[1]);
+        leftValues = @[(__bridge id)self.helper.lineLeftPath.CGPath,(__bridge id)self.helper.linePointLeftPath.CGPath,(__bridge id)self.helper.leftPath.CGPath];
+        rightValues = @[(__bridge id)self.helper.lineRightPath.CGPath,(__bridge id)self.helper.linePointRightPath.CGPath,(__bridge id)self.helper.rightPath.CGPath];
+        self.leftEyeLayer.strokeColor = onColor;
+        self.rightEyeLayer.strokeColor = onColor;
+        self.mouseLayer.strokeColor = onColor;
+        ballValue = @[(__bridge id)self.helper.switchRightPath.CGPath,(__bridge id)self.helper.switchMiddlePath.CGPath,(__bridge id)self.helper.switchLeftPath.CGPath];
         
     } else {
         
         self.bgGradientLayer.colors = self.offColorArray;
-        leftValues = @[(__bridge id)leftPath.CGPath,(__bridge id)linePointLeftPath.CGPath,(__bridge id)lineLeftPath.CGPath];
-        rightValues = @[(__bridge id)rightPath.CGPath,(__bridge id)linePointRightPath.CGPath,(__bridge id)lineRightPath.CGPath];
-        self.leftEyeLayer.strokeColor = (__bridge CGColorRef _Nullable)(self.offColorArray[1]);
-        self.rightEyeLayer.strokeColor = (__bridge CGColorRef _Nullable)(self.offColorArray[1]);
-        self.mouseLayer.strokeColor = (__bridge CGColorRef _Nullable)(self.offColorArray[1]);
+        leftValues = @[(__bridge id)self.helper.leftPath.CGPath,(__bridge id)self.helper.linePointLeftPath.CGPath,(__bridge id)self.helper.lineLeftPath.CGPath];
+        rightValues = @[(__bridge id)self.helper.rightPath.CGPath,(__bridge id)self.helper.linePointRightPath.CGPath,(__bridge id)self.helper.lineRightPath.CGPath];
+        self.leftEyeLayer.strokeColor = offColor;
+        self.rightEyeLayer.strokeColor = offColor;
+        self.mouseLayer.strokeColor = offColor;
+        ballValue = @[(__bridge id)self.helper.switchLeftPath.CGPath,(__bridge id)self.helper.switchMiddlePath.CGPath,(__bridge id)self.helper.switchRightPath.CGPath];
     }
     
-    CAKeyframeAnimation *leftLineAniamtion = [CAKeyframeAnimation animationWithKeyPath:@"path"];
-    leftLineAniamtion.values = leftValues;
-    leftLineAniamtion.duration = .3;
-    leftLineAniamtion.removedOnCompletion = NO;
-    leftLineAniamtion.fillMode = kCAFillModeForwards;
-    [self.leftEyeLayer addAnimation:leftLineAniamtion forKey:@"leftAnimationKey"];
     
-    CAKeyframeAnimation *rightLineAniamtion = [CAKeyframeAnimation animationWithKeyPath:@"path"];
-    rightLineAniamtion.values = rightValues;
-    rightLineAniamtion.duration = .3;
-    rightLineAniamtion.removedOnCompletion = NO;
-    rightLineAniamtion.fillMode = kCAFillModeForwards;
-    [self.rightEyeLayer addAnimation:rightLineAniamtion forKey:@"rightAnimationKey"];
+    [self.leftEyeLayer addAnimation:[self.helper createKeyframeAniamtionWithValue:leftValues] forKey:@"leftAnimationKey"];
+    
+    [self.rightEyeLayer addAnimation:[self.helper createKeyframeAniamtionWithValue:rightValues] forKey:@"rightAnimationKey"];
+    
+    [self.switchBallLayer addAnimation:[self.helper createKeyframeAniamtionWithValue:ballValue] forKey:@"moveAnimationKey"];
 
 }
 
