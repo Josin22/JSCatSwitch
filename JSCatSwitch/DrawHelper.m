@@ -144,10 +144,8 @@
     CGFloat ballRadius = switchLineWidth*scale_cat_switch_radius;
     
     self.switchLeftPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(switchLineX, switchLineY-ballRadius, 2*ballRadius, 2*ballRadius)];
-    
     [self.switchLeftPath closePath];
 
-    
     self.switchMiddlePath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(switchLineX+switchLineWidth/2-15,  switchLineY-ballRadius+4, 2*ballRadius+30, 2*ballRadius-8)];
     [self.switchMiddlePath closePath];
     
@@ -162,7 +160,6 @@
     keyframeAnimation.duration = .3;
     keyframeAnimation.removedOnCompletion = NO;
     keyframeAnimation.fillMode = kCAFillModeForwards;
-    
     return keyframeAnimation;
 }
 
