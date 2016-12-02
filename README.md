@@ -53,6 +53,9 @@ UIBezierPath 里主要方法讲解:
 
 
 # 最终显示效果
+
+看到这请往右上角点个star吧~谢谢
+
 ![images](https://raw.githubusercontent.com/Josin22/JSCatSwitch/master/Source/CatSwitch.gif)
 
 
