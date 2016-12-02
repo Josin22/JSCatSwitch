@@ -4,7 +4,7 @@
 //
 //  Created by 乔同新 on 2016/12/1.
 //  Copyright © 2016年 乔同新. All rights reserved.
-//
+//  Github:  https://github.com/Josin22/JSCatSwitch
 
 #import "DrawHelper.h"
 
