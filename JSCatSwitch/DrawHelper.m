@@ -143,13 +143,13 @@
     
     CGFloat ballRadius = switchLineWidth*scale_cat_switch_radius;
     
-    self.switchLeftPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(switchLineX, switchLineY-ballRadius, 2*ballRadius, 2*ballRadius)];
+    self.switchLeftPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(switchLineX-ballRadius, switchLineY-ballRadius, 2*ballRadius, 2*ballRadius)];
     [self.switchLeftPath closePath];
 
     self.switchMiddlePath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(switchLineX+switchLineWidth/2-15,  switchLineY-ballRadius+4, 2*ballRadius+30, 2*ballRadius-8)];
     [self.switchMiddlePath closePath];
     
-    self.switchRightPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(switchLineX+switchLineWidth,  switchLineY-ballRadius, 2*ballRadius, 2*ballRadius)];
+    self.switchRightPath = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(switchLineX+switchLineWidth-ballRadius,  switchLineY-ballRadius, 2*ballRadius, 2*ballRadius)];
     [self.switchRightPath closePath];
 }
 
